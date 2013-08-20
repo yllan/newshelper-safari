@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript">
+var newsHelperAlreadyFetching = {};
+
+var fetchReportsAfter = function(latestReport, event) {
+  var lastTime = '' + (latestReport ? parseInt(latestReport.updated_at) : 0);
+  var url = 'http://newshelper.g0v.tw/index/data?time=' + lastTime;
+
+  if (newsHelperAlreadyFetching[lastTime]) return;
+  newsHelperAlreadyFetching[lastTime] = true;
+    
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url);
+  xhr.setRequestHeader('Cache-Control', 'no-cache');
+  xhr.onload = function() {
+    var json = JSON.parse(xhr.responseText);
+    console.log("onload json!");
+    console.log(event.target.page);
+    event.target.page.dispatchMessage(event.name + "Receive", json);
+  }
+  xhr.send();
+};
+
+function newshelper_message_handler(messageEvent) {
+  if (messageEvent.name === "fetchReportsAfter") {
+    fetchReportsAfter(messageEvent.message, messageEvent);
+  }
+}
+
+safari.application.addEventListener("message", newshelper_message_handler, false);
+</script>
+</head>
+
+</html>
