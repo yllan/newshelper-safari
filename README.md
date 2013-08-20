@@ -5,7 +5,7 @@
 
 安裝
 --------
-用 Safari [點此下載](http://yllan.github.io/newshelper-safari/newshelper-safari.safariextz)。
+用 Safari [點此下載](http://yllan.github.io/newshelper-safari/newshelper-safari.safariextz)，下載後點兩下會用 Safari 開啟問你要不要安裝。
 
 Backend
 -------
