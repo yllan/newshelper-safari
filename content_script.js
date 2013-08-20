@@ -42,7 +42,7 @@ var get_newshelper_db = function(callback) {
       var shortName = 'newshelper_db';
       var version = '1.0';
       var displayName = '新聞小幫手 Database';
-      var maxSize = 25 * 1024 * 1024; // in bytes
+      var maxSize = 50 * 1024 * 1024; // in bytes
       var db = openDatabase(shortName, version, displayName, maxSize);
       
       opened_db = db;
