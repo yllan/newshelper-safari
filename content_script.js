@@ -235,6 +235,23 @@ var censorFacebook = function(baseNode) {
       else
         containerNode.addClass(className);
 
+      // 先看看是不是 uiStreamActionFooter, 表示是同一個新聞有多人分享, 那只要最上面加上就好了
+      var addedAction = false;
+      containerNode.parent('div[role=article]').find('.uiStreamActionFooter').each(function(idx, uiStreamSource) {
+        $(uiStreamSource).find('li:first').append(' · ' + buildActionBar({title: titleText, link: linkHref}));
+        addedAction = true;
+      });
+
+      // 再看看單一動態，要加在 .uiStreamSource
+      if (!addedAction) {
+        containerNode.parent('div[role=article]').find('.uiStreamSource').each(function(idx, uiStreamSource) {
+          $($('<span></span>').html(buildActionBar({title: titleText, link: linkHref}) + ' · ')).insertBefore(uiStreamSource);
+
+          // should only have one uiStreamSource
+          if (idx != 0) console.error(idx + titleText);
+        });
+      }
+
       /* log the link first */
       log_browsed_link(linkHref, titleText);
 
@@ -291,14 +308,34 @@ var registerObserver = function() {
       characterData: true
     }
   };
+
+  var throttle = (function() {
+    var timer_ = null;
+    return function(fn, wait) {
+      if (timer_) {
+        clearTimeout(timer_);
+      }
+      timer_ = setTimeout(fn, wait);
+    };
+  })();
+
   var mutationObserver = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-      censorFacebook(mutation.target);
-    });
+    // So far, the value of mutation.target is always document.body.
+    // Unless we want to do more fine-granted control, it is ok to pass document.body for now.
+    throttle(function() {
+      censorFacebook(document.body);
+    }, 1000);
   });
   mutationObserver.observe(mutationObserverConfig.target, mutationObserverConfig.config);
 };
 
+var buildActionBar = function(options) {
+  var url = 'http://newshelper.g0v.tw';
+  if ('undefined' !== typeof(options.title) && 'undefined' !== typeof(options.link)) {
+    url += '?news_link=' + encodeURIComponent(options.link) + '&news_title= ' + encodeURIComponent(options.title);
+  }
+  return '<a href="' + url + '" target="_blank">回報給新聞小幫手</a>';
+};
 
 var main = function() {
   $(function(){
