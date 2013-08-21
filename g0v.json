@@ -1,9 +1,9 @@
 {
   "author": "yllan",
   "status": "production",
-  "name": "newshelper-extension",
-  "name_zh": "新聞小幫手",
-  "description": "newshelper-extension: a chrome extension helps you to identify incorrect news",
+  "name": "newshelper-safari",
+  "name_zh": "新聞小幫手 Safari Extension",
+  "description": "newshelper-safari: a chrome extension helps you to identify incorrect news",
   "description_zh": "newshelper-extension: 告訴你你正受到有害新聞所害",
   "homepage": "http://newshelper.g0v.tw",
   "document": "https://docs.google.com/spreadsheet/ccc?key=0AvCxAZD9rYXMdGFrSjBHb2IxTW5mSE5vQVhGaThiX3c",
@@ -31,7 +31,6 @@
     "新聞小幫手"
   ],
   "contributors": [
-    "yllan"
   ],
   "needs": [
     "programmer"
