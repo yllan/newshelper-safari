@@ -3,8 +3,8 @@
   "status": "production",
   "name": "newshelper-safari",
   "name_zh": "新聞小幫手 Safari Extension",
-  "description": "newshelper-safari: a chrome extension helps you to identify incorrect news",
-  "description_zh": "newshelper-extension: 告訴你你正受到有害新聞所害",
+  "description": "newshelper-safari: a safari extension helps you to identify incorrect news",
+  "description_zh": "newshelper-safari: 告訴你你正受到有害新聞所害",
   "homepage": "http://newshelper.g0v.tw",
   "document": "https://docs.google.com/spreadsheet/ccc?key=0AvCxAZD9rYXMdGFrSjBHb2IxTW5mSE5vQVhGaThiX3c",
   "repository": {
