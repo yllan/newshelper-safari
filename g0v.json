@@ -1,0 +1,39 @@
+{
+  "author": "yllan",
+  "status": "production",
+  "name": "newshelper-extension",
+  "name_zh": "新聞小幫手",
+  "description": "newshelper-extension: a chrome extension helps you to identify incorrect news",
+  "description_zh": "newshelper-extension: 告訴你你正受到有害新聞所害",
+  "homepage": "http://newshelper.g0v.tw",
+  "document": "https://docs.google.com/spreadsheet/ccc?key=0AvCxAZD9rYXMdGFrSjBHb2IxTW5mSE5vQVhGaThiX3c",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yllan/newshelper-safari"
+  },
+  "licenses": [
+    {
+      "type": "MIT"
+    }
+  ],
+  "keywords": [
+    "safari",
+    "javascript",
+    "jquery"
+  ],
+  "audience": [
+    "public"
+  ],
+  "products": [
+    "extension"
+  ],
+  "projects": [
+    "新聞小幫手"
+  ],
+  "contributors": [
+    "yllan"
+  ],
+  "needs": [
+    "programmer"
+  ]
+}
