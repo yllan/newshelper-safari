@@ -188,8 +188,15 @@ var log_browsed_link = function(link, title) {
   if (!link) return;
 
   open_newshelper_db(function(tranx) {
-    tranx.executeSql("INSERT OR REPLACE INTO read_news (title, link, last_seen_at) VALUES (?, ?, ?);", 
-                      [title, link, Math.floor((new Date()).getTime() / 1000)]);
+    tranx.executeSql("SELECT id FROM read_news WHERE link = ?;", [link], function(tranx, results) {
+      if (results.rows.length == 0) {
+        tranx.executeSql("INSERT INTO read_news (title, link, last_seen_at) VALUES (?, ?, ?);", 
+                         [title, link, Math.floor((new Date()).getTime() / 1000)]);
+      } else {
+        tranx.executeSql("UPDATE read_news SET (title, last_seen_at) VALUES (?, ?) WHERE id = ?;", 
+                         [title, Math.floor((new Date()).getTime() / 1000), results.rows.item(0).id]);
+      }
+    });
   });
 };
 
