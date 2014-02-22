@@ -235,6 +235,12 @@ var censorFacebook = function(baseNode) {
       if (matches) {
         linkHref = decodeURIComponent(matches[1]);
       }
+      // 處理 被加上 ?fb_action_ids=xxxxx 的情況
+      matches = ('' + linkHref).match('(.*)[?&]fb_action_ids=.*');
+      if (matches) {
+        linkHref = matches[1];
+      }
+
       var containerNode = $(containerNode);
       var className = "newshelper-checked";
       if (containerNode.hasClass(className))
@@ -254,8 +260,64 @@ var censorFacebook = function(baseNode) {
         containerNode.parent('div[role=article]').find('.uiStreamSource').each(function(idx, uiStreamSource) {
           $($('<span></span>').html(buildActionBar({title: titleText, link: linkHref}) + ' · ')).insertBefore(uiStreamSource);
 
+          addedAction = true;
+
           // should only have one uiStreamSource
           if (idx != 0) console.error(idx + titleText);
+        });
+      }
+
+      // 再來有可能是有人說某個連結讚
+      if (!addedAction) {
+        containerNode.parent('div.storyInnerContent').find('.uiStreamSource').each(function(idx, uiStreamSource){
+          $($('<span></span>').html(buildActionBar({title: titleText, link: linkHref}) + ' · ')).insertBefore(uiStreamSource);
+          addedAction = true;
+        });
+      }
+
+      // 再來是個人頁面
+      if (!addedAction) {
+        containerNode.parent('div[role="article"]').siblings('.uiCommentContainer').find('.UIActionLinks').each(function(idx, uiStreamSource){
+          $(uiStreamSource).append(' · ').append(buildActionBar({title: titleText, link: linkHref}));
+          addedAction = true;
+        });
+      }
+
+      // 新版Timeline
+      if (!addedAction) {
+        containerNode.parent('._4q_').find('._6p-').find('._5ciy').find('._6j_').each(function(idx, shareAction){
+         console.log(shareAction);
+         $($('<a class="_5cix"></a>').html(buildActionBar({title: titleText, link: linkHref}))).insertAfter(shareAction);
+          addedAction = true;
+        });
+      }
+
+      if (!addedAction) {
+        containerNode.parent().parent('.UFICommentContent').parent().find('.UFICommentActions').each(function(idx, foo){
+          $(foo).append(' · ', buildActionBar({title: titleText, link: linkHref}));
+          addedAction = true;
+        });
+      }
+      if (!addedAction) {
+        // this check sould be after UFICommentContent
+        containerNode.parents('._5pax').find('._5pcp').each(function(idx, foo){
+          $(foo).append(' · ', buildActionBar({title: titleText, link: linkHref}));
+          addedAction = true;
+        });
+      }
+
+      // 再來是single post
+      if (!addedAction) {
+        containerNode.parent('div[role="article"]').find('.uiCommentContainer .UIActionLinks').each(function(idx, uiStreamSource){
+          $(uiStreamSource).append(' · ').append(buildActionBar({title: titleText, link: linkHref}));
+          addedAction = true;
+        });
+      }
+
+      if (!addedAction) {
+        containerNode.siblings().find('.uiCommentContainer').find('.UIActionLinks').each(function(idx, foo){
+          $(foo).append(' · ', buildActionBar({title: titleText, link: linkHref}));
+          addedAction = true;
         });
       }
 
@@ -271,35 +333,57 @@ var censorFacebook = function(baseNode) {
       });
     };
 
-
     /* my timeline */
-    $(baseNode).find(".uiStreamAttachments").each(function(idx, uiStreamAttachment) {
-      var uiStreamAttachment = $(uiStreamAttachment)
-      if (!uiStreamAttachment.hasClass("newshelper-checked")) {
-        var titleText = uiStreamAttachment.find(".uiAttachmentTitle").text();
-        var linkHref = uiStreamAttachment.find("a").attr("href");
-        censorFacebookNode(uiStreamAttachment, titleText, linkHref);
-      }
+    $(baseNode)
+    .find(".uiStreamAttachments")
+    .not(".newshelper-checked")
+    .each(function(idx, uiStreamAttachment) {
+      uiStreamAttachment = $(uiStreamAttachment);
+      var titleText = uiStreamAttachment.find(".uiAttachmentTitle").text();
+      var linkHref = uiStreamAttachment.find("a").attr("href");
+      censorFacebookNode(uiStreamAttachment, titleText, linkHref);
+    });
+
+    $(baseNode)
+    .find("._5rwo")
+    .not(".newshelper-checked")
+    .each(function(idx, userContent) {
+      userContent = $(userContent);
+      var titleText = userContent.find(".fwb").text();
+      var linkHref = userContent.find("a").attr("href");
+      censorFacebookNode(userContent, titleText, linkHref);
     });
 
     /* others' timeline, fan page */
-    $(baseNode).find(".shareUnit").each(function(idx, shareUnit) {
-      var shareUnit = $(shareUnit);
-      if (!shareUnit.hasClass("newshelper-checked")) {
-        var titleText = shareUnit.find(".fwb").text();
-        var linkHref = shareUnit.find("a").attr("href");
-        censorFacebookNode(shareUnit, titleText, linkHref)
-      };
+    $(baseNode)
+    .find(".shareUnit")
+    .not(".newshelper-checked")
+    .each(function(idx, shareUnit) {
+      shareUnit = $(shareUnit);
+      var titleText = shareUnit.find(".fwb").text();
+      var linkHref = shareUnit.find("a").attr("href");
+      censorFacebookNode(shareUnit, titleText, linkHref);
+    });
+
+    $(baseNode)
+    .find("._5rny")
+    .not(".newshelper-checked")
+    .each(function(idx, userContent) {
+      userContent = $(userContent);
+      var titleText = userContent.find(".fwb").text();
+      var linkHref = userContent.find("a").attr("href");
+      censorFacebookNode(userContent, titleText, linkHref);
     });
 
     /* post page (single post) */
-    $(baseNode).find("._6kv").each(function(idx, userContent) {
-      var userContent = $(userContent);
-      if (!userContent.hasClass("newshelper-checked")) {
-        var titleText = userContent.find(".mbs").text();
-        var linkHref = userContent.find("a").attr("href");
-        censorFacebookNode(userContent, titleText, linkHref);
-      };
+    $(baseNode)
+    .find("._6kv")
+    .not(".newshelper-checked")
+    .each(function(idx, userContent) {
+      userContent = $(userContent);
+      var titleText = userContent.find(".mbs").text();
+      var linkHref = userContent.find("a").attr("href");
+      censorFacebookNode(userContent, titleText, linkHref);
     });
   }
 };
@@ -308,11 +392,12 @@ var censorFacebook = function(baseNode) {
 var registerObserver = function() {
   var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
   var mutationObserverConfig = {
-    target: document.getElementsByTagName("body")[0],
+    target: document,
     config: {
       attributes: true,
       childList: true,
-      characterData: true
+      characterData: true,
+      subtree: true
     }
   };
 
@@ -327,10 +412,10 @@ var registerObserver = function() {
   })();
 
   var mutationObserver = new MutationObserver(function(mutations) {
-    // So far, the value of mutation.target is always document.body.
-    // Unless we want to do more fine-granted control, it is ok to pass document.body for now.
+    // So far, the value of mutation.target is always document.
+    // Unless we want to do more fine-granted control, it is ok to pass document for now.
     throttle(function() {
-      censorFacebook(document.body);
+      censorFacebook(document);
     }, 1000);
   });
   mutationObserver.observe(mutationObserverConfig.target, mutationObserverConfig.config);
