@@ -254,6 +254,14 @@ var censorFacebook = function(baseNode) {
         $(uiStreamSource).find('li:first').append(' · ' + buildActionBar({title: titleText, link: linkHref}));
         addedAction = true;
       });
+      
+      if (!addedAction) {
+        containerNode.parent().parent('._6m2').parent('.mtm').parent().parent().parent('.userContentWrapper')
+        .find('._5pcp').each(function(idx, shareLink){
+          $(shareLink).append(' . ' + buildActionBar({title: titleText, link: linkHref}));
+          addedAction = true;
+        });
+      }
 
       // 再看看單一動態，要加在 .uiStreamSource
       if (!addedAction) {
@@ -350,6 +358,29 @@ var censorFacebook = function(baseNode) {
     .each(function(idx, userContent) {
       userContent = $(userContent);
       var titleText = userContent.find(".fwb").text();
+      var linkHref = userContent.find("a").attr("href");
+      censorFacebookNode(userContent, titleText, linkHref);
+    });
+
+    $(baseNode)
+    .find("._42ef")
+    .not(".newshelper-checked")
+    .each(function(idx, userContent) {
+      userContent = $(userContent);
+      var titleText = userContent.find(".fwb").text();
+      if (!titleText) { titleText = userContent.find("._6m6").find("a").text(); }
+      var linkHref = userContent.find("a").attr("href");
+      censorFacebookNode(userContent, titleText, linkHref);
+    });
+
+    /* 寬版 content */
+    $(baseNode)
+    .find("._6m3")
+    .not(".newshelper-checked")
+    .each(function(idx, userContent) {
+      userContent = $(userContent);
+      var titleText = userContent.find(".fwb").text();
+      if (!titleText) { titleText = userContent.find("._6m6").find("a").text(); }
       var linkHref = userContent.find("a").attr("href");
       censorFacebookNode(userContent, titleText, linkHref);
     });
