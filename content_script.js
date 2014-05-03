@@ -231,9 +231,9 @@ var censorFacebook = function(baseNode) {
     /* log browsing history into local database for further warning */
     /* add warning message to a Facebook post if necessary */
     var censorFacebookNode = function(containerNode, titleText, linkHref) {
-      var matches = ('' + linkHref).match('^http://www\.facebook\.com/l\.php\\?u=([^&]*)');
+      var matches = ('' + linkHref).match('^http://(l|www)\.facebook\.com/l\.php\\?u=([^&]*)');
       if (matches) {
-        linkHref = decodeURIComponent(matches[1]);
+        linkHref = decodeURIComponent(matches[2]);
       }
       // 處理 被加上 ?fb_action_ids=xxxxx 的情況
       matches = ('' + linkHref).match('(.*)[?&]fb_action_ids=.*');
@@ -243,10 +243,12 @@ var censorFacebook = function(baseNode) {
 
       var containerNode = $(containerNode);
       var className = "newshelper-checked";
-      if (containerNode.hasClass(className))
+      if (containerNode.hasClass(className)) {
         return;
-      else
+      }
+      else {
         containerNode.addClass(className);
+      }
 
       // 先看看是不是 uiStreamActionFooter, 表示是同一個新聞有多人分享, 那只要最上面加上就好了
       var addedAction = false;
@@ -256,8 +258,18 @@ var censorFacebook = function(baseNode) {
       });
       
       if (!addedAction) {
+        containerNode.parent().parent('._6m2').parent('.mtm').parent('._5pcr')
+        .find('div.fcg.fwn').each(function(idx, div){
+          $(div).append(' ' + buildActionBar({title: titleText, link: linkHref}));
+          addedAction = true;
+          return false; // 只加第一個
+        });
+
+      }
+
+      if (!addedAction) {
         containerNode.parent().parent('._6m2').parent('.mtm').parent().parent().parent('.userContentWrapper')
-        .find('._5pcp').each(function(idx, shareLink){
+        .find('._5vsi').each(function(idx, shareLink){
           $(shareLink).append(' . ' + buildActionBar({title: titleText, link: linkHref}));
           addedAction = true;
         });
@@ -269,7 +281,6 @@ var censorFacebook = function(baseNode) {
           $($('<span></span>').html(buildActionBar({title: titleText, link: linkHref}) + ' · ')).insertBefore(uiStreamSource);
 
           addedAction = true;
-
           // should only have one uiStreamSource
           if (idx != 0) console.error(idx + titleText);
         });
@@ -462,10 +473,7 @@ var buildActionBar = function(options) {
 
 var main = function() {
   $(function(){
-    // fire up right after the page loaded
-    // 可能會呼叫多次，是因為 iframe 的關係?
     censorFacebook(document.body);
-
     sync_report_data();
 
     /* deal with changed DOMs (i.e. AJAX-loaded content) */
