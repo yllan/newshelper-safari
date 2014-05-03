@@ -203,7 +203,9 @@ var log_browsed_link = function(link, title) {
 
 // 從 db 中判斷 title, url 是否是錯誤新聞，是的話執行 cb 並傳入資訊
 var check_report = function(title, url, callback){
-  if (!url) return;
+  if (!url || url === "#" || typeof url !== "string" || url.substr(0, 4) !== "http") {
+    return;
+  }
 
   open_newshelper_db(function(tranx) {
     tranx.executeSql("SELECT * FROM report WHERE news_link = ? LIMIT 1;", [url], function(tranx, results) {
@@ -258,7 +260,7 @@ var censorFacebook = function(baseNode) {
       });
       
       if (!addedAction) {
-        containerNode.parent().parent('._6m2').parent('.mtm').parent('._5pcr')
+        containerNode.parent('._5pcr')
         .find('div.fcg.fwn').each(function(idx, div){
           $(div).append(' ' + buildActionBar({title: titleText, link: linkHref}));
           addedAction = true;
@@ -268,7 +270,7 @@ var censorFacebook = function(baseNode) {
       }
 
       if (!addedAction) {
-        containerNode.parent().parent('._6m2').parent('.mtm').parent().parent().parent('.userContentWrapper')
+        containerNode.parent().parent().parent('.userContentWrapper')
         .find('._5vsi').each(function(idx, shareLink){
           $(shareLink).append(' . ' + buildActionBar({title: titleText, link: linkHref}));
           addedAction = true;
@@ -360,6 +362,9 @@ var censorFacebook = function(baseNode) {
       uiStreamAttachment = $(uiStreamAttachment);
       var titleText = uiStreamAttachment.find(".uiAttachmentTitle").text();
       var linkHref = uiStreamAttachment.find("a").attr("href");
+      if (!linkHref) {
+        linkHref = uiStreamAttachment.find(".uiAttachmentTitle").find("a").attr("href");
+      }
       censorFacebookNode(uiStreamAttachment, titleText, linkHref);
     });
 
@@ -373,20 +378,9 @@ var censorFacebook = function(baseNode) {
       censorFacebookNode(userContent, titleText, linkHref);
     });
 
+    // 新版 Facebook
     $(baseNode)
-    .find("._42ef")
-    .not(".newshelper-checked")
-    .each(function(idx, userContent) {
-      userContent = $(userContent);
-      var titleText = userContent.find(".fwb").text();
-      if (!titleText) { titleText = userContent.find("._6m6").find("a").text(); }
-      var linkHref = userContent.find("a").attr("href");
-      censorFacebookNode(userContent, titleText, linkHref);
-    });
-
-    /* 寬版 content */
-    $(baseNode)
-    .find("._6m3")
+    .find("div.mtm")
     .not(".newshelper-checked")
     .each(function(idx, userContent) {
       userContent = $(userContent);
